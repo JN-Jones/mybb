@@ -423,3 +423,8 @@ $l['buddyrequest_declined'] = 'The selected buddy request has been declined.';
 $l['user_doesnt_exist'] = 'The end user no longer exists.';
 $l['buddyrequests_sent_success'] = 'Buddy requests sent successfully.';
 
+$l['my2fa_activated'] = "Two Factoc Authentication has been activated. Please scan the QR Code now.";
+$l['my2fa_activated_desc'] = "Two Factor Authentication is activated at the moment. Please scan the QR Code below to make sure you can log in to your account.";
+$l['my2fa_deactivate'] = "Deactivate";
+$l['my2fa_deactivated_desc'] = "Two Factor Authentication is deactivated at the moment. Note that you need a smartphone with an app like Google Authenticator or Authy to use Two Factor Authentication.";
+$l['my2fa_activate'] = "Activate";

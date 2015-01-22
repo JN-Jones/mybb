@@ -435,6 +435,13 @@ else
 
 $plugins->run_hooks('global_intermediate');
 
+// This user still needs to enter his 2FA data
+echo "<pre>";var_dump($session->authenticated);echo "</pre>";
+if(!$session->authenticated && THIS_SCRIPT != "member.php" && !in_array($mybb->input['action'], array("login", "logout", "2fa")))
+{
+	redirect("member.php?action=2fa", $lang->my2fa_code);
+}
+
 // If the board is closed and we have a usergroup allowed to view the board when closed, then show board closed warning
 $bbclosedwarning = '';
 if($mybb->settings['boardclosed'] == 1 && $mybb->usergroup['canviewboardclosed'] == 1)

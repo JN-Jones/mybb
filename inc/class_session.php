@@ -16,6 +16,7 @@ class session
 	public $packedip = '';
 	public $useragent = '';
 	public $is_spider = false;
+	public $authenticated = 1;
 
 	/**
 	 * Initialize a session
@@ -47,6 +48,7 @@ class session
 		// If we have a valid session id and user id, load that users session.
 		if(!empty($mybb->cookies['mybbuser']))
 		{
+			$this->authenticated = $session['authenticated'];
 			$logon = explode("_", $mybb->cookies['mybbuser'], 2);
 			$this->load_user($logon[0], $logon[1]);
 		}
@@ -54,6 +56,9 @@ class session
 		// If no user still, then we have a guest.
 		if(!isset($mybb->user['uid']))
 		{
+			// Guests and spiders don't have to enter a 2FA code
+			$this->authenticated = 1;
+
 			// Detect if this guest is a search engine spider. (bots don't get a cookied session ID so we first see if that's set)
 			if(!$this->sid)
 			{

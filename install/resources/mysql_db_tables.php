@@ -8,6 +8,14 @@
  *
  */
 
+$tables[] = "CREATE TABLE mybb_2fa (
+  id int unsigned NOT NULL auto_increment,
+  secret varchar(16) NOT NULL,
+  code varchar(6) NOT NULL,
+  time bigint(30) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM;";
+
 $tables[] = "CREATE TABLE mybb_adminlog (
   uid int unsigned NOT NULL default '0',
   ipaddress varbinary(16) NOT NULL default '',
@@ -40,7 +48,8 @@ $tables[] = "CREATE TABLE mybb_adminsessions (
   dateline int unsigned NOT NULL default '0',
   lastactive int unsigned NOT NULL default '0',
   data TEXT NOT NULL,
-  useragent varchar(100) NOT NULL default ''
+  useragent varchar(100) NOT NULL default '',
+  authenticated tinyint(1) NOT NULL default '0'
 ) ENGINE=MyISAM;";
 
 $tables[] = "CREATE TABLE mybb_adminviews (
@@ -704,6 +713,7 @@ $tables[] = "CREATE TABLE mybb_sessions (
   nopermission tinyint(1) NOT NULL default '0',
   location1 int(10) NOT NULL default '0',
   location2 int(10) NOT NULL default '0',
+  authenticated tinyint(1) NOT NULL default '0',
   PRIMARY KEY(sid),
   KEY location (location1, location2),
   KEY time (time),
@@ -1113,6 +1123,7 @@ $tables[] = "CREATE TABLE mybb_users (
   loginattempts tinyint(2) NOT NULL default '1',
   usernotes text NOT NULL,
   sourceeditor tinyint(1) NOT NULL default '0',
+  secret varchar(16) NOT NULL default '',
   UNIQUE KEY username (username),
   KEY usergroup (usergroup),
   KEY regip (regip),

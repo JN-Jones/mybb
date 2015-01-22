@@ -563,3 +563,6 @@ $l['sfs_error_email'] = 'email';
 $l['sfs_error_or'] = 'or';
 
 $l['boardclosed_reason'] = 'These forums are currently closed for maintenance. Please check back later';
+
+$l['my2fa'] = "MyBB Two Factor Authentication";
+$l['my2fa_code'] = "Please enter the authentication code";

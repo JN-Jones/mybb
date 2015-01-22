@@ -27,6 +27,7 @@ $templatelist .= ",usercp_editlists_no_buddies,usercp_editlists_no_ignored,userc
 $templatelist .= ",usercp_usergroups_leader_usergroup_memberlist,usercp_usergroups_leader_usergroup_moderaterequests,usercp_usergroups_memberof_usergroup_leaveprimary,usercp_usergroups_memberof_usergroup_display,usercp_email";
 $templatelist .= ",usercp_usergroups_memberof_usergroup_leaveleader,usercp_usergroups_memberof_usergroup_leaveother,usercp_usergroups_memberof_usergroup_leave,usercp_usergroups_joinable_usergroup_description,usercp_options_time_format";
 $templatelist .= ",usercp_editlists_sent_request,usercp_editlists_received_request,usercp_drafts_none,usercp_usergroups_memberof_usergroup_setdisplay,usercp_usergroups_memberof_usergroup_description,usercp_editlists_user,usercp_profile_day,usercp_profile_contact_fields,usercp_profile_contact_fields_field, usercp_profile_website";
+$templatelist .= ",usercp_2fa_activated,usercp_2fa_deactivated";
 
 require_once "./global.php";
 require_once MYBB_ROOT."inc/functions_post.php";
@@ -177,6 +178,9 @@ switch($mybb->input['action'])
 		break;
 	case "attachments":
 		add_breadcrumb($lang->ucp_nav_attachments);
+		break;
+	case "2fa":
+		add_breadcrumb($lang->ucp_nav_2fa);
 		break;
 }
 
@@ -1347,6 +1351,43 @@ if($mybb->input['action'] == "password")
 
 	eval("\$editpassword = \"".$templates->get("usercp_password")."\";");
 	output_page($editpassword);
+}
+
+if($mybb->input['action'] == "2fa")
+{
+	require_once MYBB_ROOT."inc/3rdparty/mybb2fa/GoogleAuthenticator.php";
+	require_once MYBB_ROOT."inc/3rdparty/mybb2fa/AuthWrapper.php";
+	$auth = new Authenticator;
+	if(isset($mybb->input['do']))
+	{
+		if($mybb->get_input('do') == "deactivate")
+		{
+			// Deactivating 2FA, set the secret key to an empty string
+			$mybb->user['secret'] = "";
+			$db->update_query("users", array("secret" => ""), "uid={$mybb->user['uid']}");
+		}
+		else
+		{
+			// Activating 2FA - create a new secret
+			$secret = $auth->createSecret();
+			$mybb->user['secret'] = $secret;
+			$db->update_query("users", array("secret" => $secret), "uid={$mybb->user['uid']}");
+			// Redirect to avoid multiple different secrets
+			redirect("usercp.php?action=2fa", $lang->my2fa_activated);
+		}
+	}
+	if(empty($mybb->user['secret']))
+	{
+		// 2FA is deactivated
+		$my2fa = eval($templates->render("usercp_2fa_deactivated"));
+	}
+	else
+	{
+		// 2FA is activated
+		$qr = $auth->getQRCodeGoogleUrl($mybb->user['username']."@".str_replace(" ", "", $mybb->settings['bbname']), $mybb->user['secret']);
+		$my2fa = eval($templates->render("usercp_2fa_activated"));
+	}
+	output_page($my2fa);
 }
 
 if($mybb->input['action'] == "do_changename" && $mybb->request_method == "post")

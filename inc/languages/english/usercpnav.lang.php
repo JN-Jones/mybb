@@ -16,6 +16,7 @@ $l['ucp_nav_edit_profile'] = "Edit Profile";
 $l['ucp_nav_edit_options'] = "Edit Options";
 $l['ucp_nav_change_email'] = "Change Email";
 $l['ucp_nav_change_pass'] = "Change Password";
+$l['ucp_nav_2fa'] = "Two-Factor Login";
 $l['ucp_nav_change_username'] = "Change Username";
 $l['ucp_nav_edit_sig'] = "Change Signature";
 $l['ucp_nav_change_avatar'] = "Change Avatar";

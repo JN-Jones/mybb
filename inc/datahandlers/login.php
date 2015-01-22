@@ -217,7 +217,7 @@ class LoginDataHandler extends DataHandler
 		$user = &$this->data;
 
 		$options = array(
-			'fields' => array('uid', 'username', 'password', 'salt', 'loginkey', 'coppauser', 'usergroup', 'loginattempts'),
+			'fields' => array('uid', 'username', 'password', 'salt', 'loginkey', 'coppauser', 'usergroup', 'loginattempts', 'secret'),
 			'username_method' => (int)$settings['username_method']
 		);
 
@@ -278,6 +278,12 @@ class LoginDataHandler extends DataHandler
 		$newsession = array(
 			"uid" => $user['uid'],
 		);
+
+		// Empty secret -> 2FA is disabled so the user is authenticated
+		if(empty($user['secret']))
+		{
+			$newsession['authenticated'] = 1;
+		}
 
 		$db->update_query("sessions", $newsession, "sid = '{$session->sid}'");
 		$db->update_query("users", array("loginattempts" => 1), "uid = '{$user['uid']}'");

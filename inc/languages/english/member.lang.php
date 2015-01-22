@@ -252,3 +252,7 @@ Username: {3}
 
 Thank you,
 {2} Staff";
+
+$l['my2fa_loggedin'] = "The code was correct, you're logged in now";
+$l['my2fa_failed'] = "The code was incorrect, you're logged out now";
+$l['my2fa_check'] = "Check";

@@ -16,7 +16,7 @@ define("ALLOWABLE_PAGE", "register,do_register,login,do_login,logout,lostpw,do_l
 $nosession['avatar'] = 1;
 $templatelist = "member_register,member_register_hiddencaptcha,member_coppa_form,member_register_coppa,member_register_agreement_coppa,member_register_agreement,usercp_options_tppselect,usercp_options_pppselect,member_register_referrer,member_register_customfield,member_register_requiredfields";
 $templatelist .= ",member_resetpassword,member_loggedin_notice,member_profile_away,member_emailuser,member_register_regimage,member_register_regimage_recaptcha,member_register_regimage_nocaptcha,member_register_regimage_ayah,post_captcha_hidden,post_captcha,post_captcha_recaptcha,post_captcha_ayah,member_profile_addremove,member_emailuser_guest";
-$templatelist .= ",member_profile_email,member_profile_offline,member_profile_reputation,member_profile_warn,member_profile_warninglevel,member_profile_customfields_field,member_profile_customfields,member_profile_adminoptions,member_profile,member_login,member_profile_online,member_viewnotes";
+$templatelist .= ",member_profile_email,member_profile_offline,member_profile_reputation,member_profile_warn,member_profile_warninglevel,member_profile_customfields_field,member_profile_customfields,member_profile_adminoptions,member_profile,member_login,member_login_2fa,member_profile_online,member_viewnotes";
 $templatelist .= ",member_profile_signature,member_profile_avatar,member_profile_groupimage,member_profile_referrals,member_profile_website,member_profile_reputation_vote,member_activate,member_resendactivation,member_lostpw,member_register_additionalfields,member_register_password,usercp_options_pppselect_option";
 $templatelist .= ",member_profile_modoptions_manageuser,member_profile_modoptions_editprofile,member_profile_modoptions_banuser,member_profile_modoptions_viewnotes,member_profile_modoptions,member_profile_modoptions_editnotes,member_profile_modoptions_purgespammer,postbit_reputation_formatted,postbit_warninglevel_formatted";
 $templatelist .= ",usercp_profile_profilefields_select_option,usercp_profile_profilefields_multiselect,usercp_profile_profilefields_select,usercp_profile_profilefields_textarea,usercp_profile_profilefields_radio,usercp_profile_profilefields_checkbox,usercp_profile_profilefields_text,usercp_options_tppselect_option";
@@ -56,6 +56,8 @@ switch($mybb->input['action'])
 	case "login":
 		add_breadcrumb($lang->nav_login);
 		break;
+	case "2fa":
+		add_breadcrumb($lang->my2fa);
 	case "emailuser":
 		add_breadcrumb($lang->nav_emailuser);
 		break;
@@ -1646,6 +1648,57 @@ if($mybb->input['action'] == "resetpassword")
 	}
 }
 
+if($mybb->input['action'] == "2fa")
+{
+	if(empty($mybb->user['secret']) || $session->authenticated)
+	{
+		error_no_permission();
+	}
+
+	if($mybb->request_method == "post")
+	{
+		require_once MYBB_ROOT."inc/3rdparty/mybb2fa/GoogleAuthenticator.php";
+		require_once MYBB_ROOT."inc/3rdparty/mybb2fa/AuthWrapper.php";
+		$auth = new Authenticator;
+		$test = $auth->verifyCode($mybb->user['secret'], $mybb->input['code']);
+		// No need to block the user anymore, either he failed (logout) or passed (login)
+		$db->update_query("sessions", array("authenticated" => 1), "sid='".$db->escape_string($mybb->cookies['sid'])."'");
+		if($test === true)
+		{
+			// Correct code, unblock the user
+			$mybb->input['url'] = $mybb->get_input('url');
+			if(!empty($mybb->input['url']) && my_strpos(basename($mybb->input['url']), 'member.php') === false)
+			{
+				if((my_strpos(basename($mybb->input['url']), 'newthread.php') !== false || my_strpos(basename($mybb->input['url']), 'newreply.php') !== false) && my_strpos($mybb->input['url'], '&processed=1') !== false)
+				{
+					$mybb->input['url'] = str_replace('&processed=1', '', $mybb->input['url']);
+				}
+	
+				$mybb->input['url'] = str_replace('&amp;', '&', $mybb->input['url']);
+	
+				// Redirect to the URL if it is not member.php
+				redirect(htmlentities($mybb->input['url']), $lang->my2fa_loggedin);
+			}
+			else
+			{
+	
+				redirect("index.php", $lang->my2fa_loggedin);
+			}
+		}
+		else
+		{
+			// Wrong code, unset the cookies (aka logout) and redirect back to index
+			my_unsetcookie("mybbuser");
+			my_unsetcookie("sid");
+			redirect("index.php", $lang->my2fa_failed);
+		}
+	}
+
+	$url = htmlentities($mybb->get_input("url"));
+	$my2fa = eval($templates->render("member_login_2fa"));
+	output_page($my2fa);
+}
+
 $do_captcha = $correct = false;
 $inline_errors = "";
 if($mybb->input['action'] == "do_login" && $mybb->request_method == "post")
@@ -1674,12 +1727,13 @@ if($mybb->input['action'] == "do_login" && $mybb->request_method == "post")
 	);
 
 	$options = array(
-		'fields' => 'loginattempts',
+		'fields' => 'loginattempts, secret',
 		'username_method' => (int)$mybb->settings['username_method'],
 	);
 
 	$user_loginattempts = get_user_by_username($user['username'], $options);
 	$user['loginattempts'] = (int)$user_loginattempts['loginattempts'];
+	$user['secret'] = $user_loginattempts['secret'];
 
 	$loginhandler->set_data($user);
 	$validated = $loginhandler->validate_login();
@@ -1716,6 +1770,13 @@ if($mybb->input['action'] == "do_login" && $mybb->request_method == "post")
 		$plugins->run_hooks("member_do_login_end");
 
 		$mybb->input['url'] = $mybb->get_input('url');
+
+		// This guy needs to enter a 2FA code
+//		echo "<pre>";var_dump($user);echo "</pre>"; die();
+		if(!empty($user['secret']))
+		{
+			redirect("member.php?action=2fa&url=".urlencode($mybb->input['url']), $lang->my2fa_code);
+		}
 
 		if(!empty($mybb->input['url']) && my_strpos(basename($mybb->input['url']), 'member.php') === false)
 		{

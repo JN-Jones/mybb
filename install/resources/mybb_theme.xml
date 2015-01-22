@@ -4685,6 +4685,37 @@ if(use_xmlhttprequest == "1")
 {$footer}
 </body>
 </html>]]></template>
+		<template name="member_login_2fa" version="1804"><![CDATA[<html>
+<head>
+<title>{$mybb->settings['bbname']} - {$lang->login} - {$lang->my2fa}</title>
+{$headerinclude}
+</head>
+<body>
+{$header}
+<table width="100%" border="0" align="center">
+<tr>
+	<td valign="top">
+		<form action="member.php" method="post">
+		<input type="hidden" name="action" value="2fa" />
+		<input type="hidden" name="url" value="{$url}" />
+		<table border="0" cellspacing="{$theme['borderwidth']}" cellpadding="{$theme['tablespace']}" class="tborder">
+			<tr>
+				<td class="thead"><strong>{$lang->my2fa}</strong></td>
+			</tr>
+			<tr>
+				<td class="trow1">{$lang->my2fa_code}: <input type="text" class="textbox" name="code" /></td>
+			</tr>
+			<tr>
+				<td class="trow2"><input type="submit" class="button" value="{$lang->my2fa_check}" /></td>
+			</tr>
+		</table>
+		</form>
+	</td>
+</tr>
+</table>
+{$footer}
+</body>
+</html>]]></template>
 		<template name="member_lostpw" version="120"><![CDATA[<html>
 <head>
 <title>{$mybb->settings['bbname']} - {$lang->lost_pw}</title>
@@ -11685,6 +11716,61 @@ if(use_xmlhttprequest == "1")
 {$footer}
 </body>
 </html>]]></template>
+		<template name="usercp_2fa_activated" version="1804"><![CDATA[<html>
+<head>
+<title>{$lang->my2fa}</title>
+{$headerinclude}
+</head>
+<body>
+{$header}
+<table width="100%" border="0" align="center">
+<tr>
+	{$usercpnav}
+	<td valign="top">
+		<table border="0" cellspacing="{$theme['borderwidth']}" cellpadding="{$theme['tablespace']}" class="tborder">
+			<tr>
+				<td class="thead"><strong>{$lang->my2fa}</strong></td>
+			</tr>
+			<tr>
+				<td class="trow">{$lang->my2fa_activated_desc} <a href="usercp.php?action=2fa&do=deactivate">{$lang->my2fa_deactivate}</a></td>
+			</tr>
+			<tr>
+				<td class="trow2"><img src="{$qr}" /></td>
+			</tr>
+		</table>
+	</td>
+</tr>
+</table>
+</form>
+{$footer}
+</body>
+</html>]]></template>
+		<template name="usercp_2fa_deactivated" version="1804"><![CDATA[<html>
+<head>
+<title>{$lang->my2fa}</title>
+{$headerinclude}
+</head>
+<body>
+{$header}
+<table width="100%" border="0" align="center">
+<tr>
+	{$usercpnav}
+	<td valign="top">
+		<table border="0" cellspacing="{$theme['borderwidth']}" cellpadding="{$theme['tablespace']}" class="tborder">
+			<tr>
+				<td class="thead" colspan="2"><strong>{$lang->my2fa}</strong></td>
+			</tr>
+			<tr>
+				<td class="trow" colspan="2">{$lang->my2fa_deactivated_desc} <a href="usercp.php?action=2fa&do=activate">{$lang->my2fa_activate}</a></td>
+			</tr>
+		</table>
+	</td>
+</tr>
+</table>
+</form>
+{$footer}
+</body>
+</html>]]></template>
 		<template name="usercp_addsubscription_thread" version="1800"><![CDATA[<html>
 <head>
 <title>{$lang->subscribe_to_thread}</title>
@@ -12513,7 +12599,7 @@ if(use_xmlhttprequest == "1")
 	<tr><td class="trow1 smalltext"><a href="usercp.php?action=forumsubscriptions" class="usercp_nav_item usercp_nav_fsubscriptions">{$lang->ucp_nav_forum_subscriptions}</a></td></tr>
 	<tr><td class="trow1 smalltext"><a href="{$profile_link}" class="usercp_nav_item usercp_nav_viewprofile">{$lang->ucp_nav_view_profile}</a></td></tr>
 </tbody>]]></template>
-		<template name="usercp_nav_profile" version="1800"><![CDATA[<tbody>
+		<template name="usercp_nav_profile" version="1804"><![CDATA[<tbody>
 <tr>
 	<td class="tcat tcat_menu tcat_collapse{$collapsedimg['usercpprofile']}">
 		<div class="expcolimage"><img src="{$theme['imgdir']}/collapse{$collapsedimg['usercpprofile']}.png" id="usercpprofile_img" class="expander" alt="[-]" title="[-]" /></div>
@@ -12526,6 +12612,7 @@ if(use_xmlhttprequest == "1")
 		<div><a href="usercp.php?action=profile" class="usercp_nav_item usercp_nav_profile">{$lang->ucp_nav_edit_profile}</a></div>
 		{$changenameop}
 		<div><a href="usercp.php?action=password" class="usercp_nav_item usercp_nav_password">{$lang->ucp_nav_change_pass}</a></div>
+		<div><a href="usercp.php?action=2fa" class="usercp_nav_item usercp_nav_password">{$lang->ucp_nav_2fa}</a></div>
 		<div><a href="usercp.php?action=email" class="usercp_nav_item usercp_nav_email">{$lang->ucp_nav_change_email}</a></div>
 		<div><a href="usercp.php?action=avatar" class="usercp_nav_item usercp_nav_avatar">{$lang->ucp_nav_change_avatar}</a></div>
 		{$changesigop}
