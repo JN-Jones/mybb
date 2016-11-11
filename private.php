@@ -429,6 +429,10 @@ if($mybb->input['action'] == "results")
 			{
 				$tofromusername = $lang->mybb_engine;
 			}
+			else if($tofromuid < 0)
+			{
+				$tofromusername = $lang->user_deleted;
+			}
 		}
 
 		$tofromusername = build_profile_link($tofromusername, $tofromuid);
@@ -1075,6 +1079,10 @@ if($mybb->input['action'] == "read")
 	if($pm['fromid'] == 0)
 	{
 		$pm['username'] = $lang->mybb_engine;
+	}
+	else if($pm['fromid'] < 0)
+	{
+		$pm['username'] = $lang->user_deleted;
 	}
 
 	if(!$pm['username'])
@@ -1937,12 +1945,20 @@ if($mybb->input['action'] == "do_export" && $mybb->request_method == "post")
 			{
 				$tofromusername = $lang->mybb_engine;
 			}
+			else if($tofromuid < 0)
+			{
+				$tofromusername = $lang->user_deleted;
+			}
 			$tofrom = $lang->from;
 		}
 
 		if($tofromuid == 0)
 		{
 			$message['fromusername'] = $lang->mybb_engine;
+		}
+		else if($tofromuid < 0)
+		{
+			$message['fromusername'] = $lang->user_deleted;
 		}
 
 		if(!$message['toid'] && $message['folder'] == 3)
@@ -2340,6 +2356,10 @@ if(!$mybb->input['action'])
 				if($tofromuid == 0)
 				{
 					$tofromusername = $lang->mybb_engine;
+				}
+				else if($tofromuid < 0)
+				{
+					$tofromusername = $lang->user_deleted;
 				}
 
 				if(!$tofromusername)

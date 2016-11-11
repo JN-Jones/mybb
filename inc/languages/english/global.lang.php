@@ -382,6 +382,7 @@ $l['slaps'] = "slaps";
 $l['with_trout'] = "around a bit with a large trout.";
 
 $l['mybb_engine'] = "MyBB Engine";
+$l['user_deleted'] = "Deleted User";
 $l['quickdelete_confirm'] = "Are you sure you want to delete this post?";
 $l['quickrestore_confirm'] = "Are you sure you want to restore this post?";
 $l['newpm_notice_one'] = "<strong>You have one unread private message</strong> from {1} titled <a href=\"{2}/private.php?action=read&amp;pmid={3}\" style=\"font-weight: bold;\">{4}</a>";

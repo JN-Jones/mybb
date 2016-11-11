@@ -557,7 +557,7 @@ $tables[] = "CREATE TABLE mybb_privatemessages (
   pmid int unsigned NOT NULL auto_increment,
   uid int unsigned NOT NULL default '0',
   toid int unsigned NOT NULL default '0',
-  fromid int unsigned NOT NULL default '0',
+  fromid int NOT NULL default '0',
   recipients text NOT NULL,
   folder smallint unsigned NOT NULL default '1',
   subject varchar(120) NOT NULL default '',

@@ -727,7 +727,7 @@ if(isset($mybb->user['pmnotice']) && $mybb->user['pmnotice'] == 2 && $mybb->user
 	}
 
 	$query = $db->query("
-		SELECT pm.subject, pm.pmid, fu.username AS fromusername, fu.uid AS fromuid
+		SELECT pm.subject, pm.pmid, fu.username AS fromusername, pm.fromid AS fromuid
 		FROM ".TABLE_PREFIX."privatemessages pm
 		LEFT JOIN ".TABLE_PREFIX."users fu on (fu.uid=pm.fromid)
 		WHERE pm.folder = '1' AND pm.uid = '{$mybb->user['uid']}' AND pm.status = '0'
@@ -741,6 +741,11 @@ if(isset($mybb->user['pmnotice']) && $mybb->user['pmnotice'] == 2 && $mybb->user
 	if($pm['fromuid'] == 0)
 	{
 		$pm['fromusername'] = $lang->mybb_engine;
+		$user_text = $pm['fromusername'];
+	}
+	else if($pm['fromuid'] < 0)
+	{
+		$pm['fromusername'] = $lang->user_deleted;
 		$user_text = $pm['fromusername'];
 	}
 	else

@@ -1546,7 +1546,7 @@ class UserDataHandler extends DataHandler
 			$db->update_query('announcements', array('uid' => 0), "uid IN({$this->delete_uids})");
 		}
 
-		$db->update_query('privatemessages', array('fromid' => 0), "fromid IN({$this->delete_uids})");
+		$db->update_query('privatemessages', array('fromid' => -1), "fromid IN({$this->delete_uids})");
 		$db->update_query('users', array('referrer' => 0), "referrer IN({$this->delete_uids})");
 
 		// Update thread ratings
